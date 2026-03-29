@@ -1,124 +1,134 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miran Dil Akademisi Pro 🌍</title>
-    <style>
-        :root { --ana: #002e5d; --ikinci: #fedd00; --beyaz: #ffffff; --gri: #f4f4f4; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--gri); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .container { width: 90%; max-width: 500px; margin-top: 20px; text-align: center; }
-        .hidden { display: none; }
-        .login-box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        input { width: 85%; padding: 12px; margin: 15px 0; border: 2px solid var(--ana); border-radius: 10px; font-size: 16px; }
-        .btn { padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; width: 100%; margin: 5px 0; }
-        .btn-main { background: var(--ana); color: var(--ikinci); }
-        .btn-learned { background: #27ae60; color: white; margin-top: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-        .progress-container { width: 100%; background: #ddd; height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
-        .progress-bar { height: 100%; background: #27ae60; width: 0%; transition: 0.4s; }
-        .flashcard { perspective: 1000px; width: 100%; height: 200px; cursor: pointer; margin-top: 15px; }
-        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
-        .flipped { transform: rotateY(180deg); }
-        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border-radius: 20px; border: 3px solid var(--ana); background: white; box-shadow: 0 8px 15px rgba(0,0,0,0.1); padding: 10px; box-sizing: border-box; }
-        .card-back { background: var(--ikinci); color: var(--ana); transform: rotateY(180deg); }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div id="loginScreen" class="login-box">
-        <h2 style="color: var(--ana);">Miran Dil Akademisi</h2>
-        <input type="text" id="username" placeholder="Adını yaz...">
-        <button class="btn btn-main" onclick="goToLanguages()">Başla</button>
-    </div>
-
-    <div id="langScreen" class="hidden">
-        <h3>Dil Seçin</h3>
-        <div class="grid">
-            <button class="btn btn-main" onclick="selectLang('İngilizce')">🇬🇧 İngilizce</button>
-            <button class="btn btn-main" onclick="selectLang('Almanca')">🇩🇪 Almanca</button>
-            <button class="btn btn-main" onclick="selectLang('İspanyolca')">🇪🇸 İspanyolca</button>
-            <button class="btn btn-main" onclick="selectLang('Fransızca')">🇫🇷 Fransızca</button>
-            <button class="btn btn-main" onclick="selectLang('Rusça')">🇷🇺 Rusça</button>
-            <button class="btn btn-main" onclick="selectLang('Arapça')">🇸🇦 Arapça</button>
-        </div>
-    </div>
-
-    <div id="levelScreen" class="hidden">
-        <h3 id="levelHeader">Seviye</h3>
-        <div class="grid">
-            <button class="btn btn-main" onclick="startLearning('A1')">A1</button>
-            <button class="btn btn-main" onclick="startLearning('A2')">A2</button>
-            <button class="btn btn-main" onclick="startLearning('B1')">B1</button>
-            <button class="btn btn-main" onclick="startLearning('B2')">B2</button>
-        </div>
-        <button class="btn" onclick="show('langScreen')" style="background:#888; color:white;">Geri</button>
-    </div>
-
-    <div id="studyScreen" class="hidden">
-        <div class="progress-container"><div id="pBar" class="progress-bar"></div></div>
-        <p id="progressText">0 / 0</p>
-        <div class="flashcard" onclick="flip()"><div id="cardInner" class="card-inner"><div id="wordFront" class="card-front">..</div><div id="wordBack" class="card-back">..</div></div></div>
-        <button class="btn btn-learned" onclick="nextWord()">Öğrendim ✅</button>
-        <button class="btn" onclick="show('levelScreen')" style="background:#888; color:white;">Çıkış</button>
-    </div>
-</div>
-
-<script>
-    let selectedLang = "", words = [], currentIndex = 0, learnedCount = 0;
-
     const data = {
         "İngilizce": {
             "A1": [
-                {f:"Always", b:"Her zaman"}, {f:"Never", b:"Asla"}, {f:"Often", b:"Sık sık"},
-                {f:"Water", b:"Su"}, {f:"Food", b:"Yemek"}, {f:"Friend", b:"Arkadaş"},
-                {f:"School", b:"Okul"}, {f:"Family", b:"Aile"}, {f:"Time", b:"Zaman"},
-                {f:"Work", b:"Çalışmak"}, {f:"Small", b:"Küçük"}, {f:"Large", b:"Büyük"},
-                {f:"Happy", b:"Mutlu"}, {f:"Sad", b:"Üzgün"}, {f:"Morning", b:"Sabah"}
+                {f:"Apple", b:"Elma"}, {f:"Book", b:"Kitap"}, {f:"School", b:"Okul"}, {f:"Family", b:"Aile"}, {f:"Happy", b:"Mutlu"},
+                {f:"Blue", b:"Mavi"}, {f:"Bread", b:"Ekmek"}, {f:"Milk", b:"Süt"}, {f:"Pencil", b:"Kalem"}, {f:"Friend", b:"Arkadaş"},
+                {f:"Morning", b:"Sabah"}, {f:"Night", b:"Gece"}, {f:"Teacher", b:"Öğretmen"}, {f:"City", b:"Şehir"}, {f:"Life", b:"Hayat"}
             ],
-            "A2": [{f:"Experience", b:"Deneyim"}, {f:"Improve", b:"Geliştirmek"}]
+            "A2": [
+                {f:"Journey", b:"Yolculuk"}, {f:"Improve", b:"Geliştirmek"}, {f:"Science", b:"Bilim"}, {f:"Nature", b:"Doğa"}, {f:"Weather", b:"Hava Durumu"},
+                {f:"Possible", b:"Mümkün"}, {f:"Village", b:"Köy"}, {f:"Island", b:"Ada"}, {f:"Kitchen", b:"Mutfak"}, {f:"Healthy", b:"Sağlıklı"},
+                {f:"Company", b:"Şirket"}, {f:"Memory", b:"Hafıza"}, {f:"Success", b:"Başarı"}, {f:"Future", b:"Gelecek"}, {f:"Danger", b:"Tehlike"}
+            ],
+            "B1": [
+                {f:"Challenge", b:"Zorluk"}, {f:"Advice", b:"Tavsiye"}, {f:"Decision", b:"Karar"}, {f:"Opinion", b:"Fikir"}, {f:"Solution", b:"Çözüm"},
+                {f:"Experience", b:"Deneyim"}, {f:"Connection", b:"Bağlantı"}, {f:"Environment", b:"Çevre"}, {f:"Culture", b:"Kültür"}, {f:"Imagine", b:"Hayal Etmek"},
+                {f:"Purpose", b:"Amaç"}, {f:"Quality", b:"Kalite"}, {f:"Target", b:"Hedef"}, {f:"Support", b:"Destek"}, {f:"Knowledge", b:"Bilgi"}
+            ],
+            "B2": [
+                {f:"Consequence", b:"Sonuç"}, {f:"Negotiation", b:"Müzakere"}, {f:"Significant", b:"Önemli"}, {f:"Substantial", b:"Kayda değer"}, {f:"Perspective", b:"Bakış açısı"},
+                {f:"Infrastructure", b:"Altyapı"}, {f:"Sustainability", b:"Sürdürülebilirlik"}, {f:"Implement", b:"Uygulamak"}, {f:"Ambition", b:"Hırs"}, {f:"Analyze", b:"Analiz etmek"},
+                {f:"Contribute", b:"Katkıda bulunmak"}, {f:"Diversity", b:"Çeşitlilik"}, {f:"Innovation", b:"Yenilik"}, {f:"Regulation", b:"Düzenleme"}, {f:"Voluntary", b:"Gönüllü"}
+            ]
         },
         "Almanca": {
             "A1": [
-                {f:"Haus", b:"Ev"}, {f:"Brot", b:"Ekmek"}, {f:"Wasser", b:"Su"},
-                {f:"Kind", b:"Çocuk"}, {f:"Frau", b:"Kadın"}, {f:"Mann", b:"Adam"},
-                {f:"Danke", b:"Teşekkürler"}, {f:"Bitte", b:"Lütfen"}, {f:"Guten Tag", b:"İyi günler"}
+                {f:"Haus", b:"Ev"}, {f:"Hund", b:"Köpek"}, {f:"Tisch", b:"Masa"}, {f:"Stadt", b:"Şehir"}, {f:"Name", b:"İsim"},
+                {f:"Land", b:"Ülke"}, {f:"Tag", b:"Gün"}, {f:"Nacht", b:"Gece"}, {f:"Geld", b:"Para"}, {f:"Zeit", b:"Zaman"},
+                {f:"Frau", b:"Kadın"}, {f:"Kind", b:"Çocuk"}, {f:"Mutter", b:"Anne"}, {f:"Vater", b:"Baba"}, {f:"Brot", b:"Ekmek"}
+            ],
+            "A2": [
+                {f:"Arbeit", b:"İş"}, {f:"Beruf", b:"Meslek"}, {f:"Erfolg", b:"Başarı"}, {f:"Gefühl", b:"Duygu"}, {f:"Gesund", b:"Sağlıklı"},
+                {f:"Küche", b:"Mutfak"}, {f:"Leben", b:"Yaşam"}, {f:"Platz", b:"Yer"}, {f:"Reise", b:"Gezi"}, {f:"Schule", b:"Okul"},
+                {f:"Traum", b:"Rüya"}, {f:"Woche", b:"Hafta"}, {f:"Zukunft", b:"Gelecek"}, {f:"Essen", b:"Yemek"}, {f:"Lernen", b:"Öğrenmek"}
+            ],
+            "B1": [
+                {f:"Abhängig", b:"Bağımlı"}, {f:"Beziehung", b:"İlişki"}, {f:"Eindruck", b:"İzlenim"}, {f:"Erfahrung", b:"Tecrübe"}, {f:"Geduld", b:"Sabır"},
+                {f:"Hoffnung", b:"Umut"}, {f:"Lösung", b:"Çözüm"}, {f:"Meinung", b:"Görüş"}, {f:"Pflicht", b:"Görev"}, {f:"Schutz", b:"Koruma"},
+                {f:"Urlaub", b:"Tatil"}, {f:"Vertrauen", b:"Güven"}, {f:"Wissen", b:"Bilgi"}, {f:"Ziel", b:"Hedef"}, {f:"Zufall", b:"Tesadüf"}
+            ],
+            "B2": [
+                {f:"Anforderung", b:"Gereksinim"}, {f:"Auswirkung", b:"Etki"}, {f:"Bewusstsein", b:"Bilinç"}, {f:"Eigenschaft", b:"Özellik"}, {f:"Forderung", b:"Talep"},
+                {f:"Gesellschaft", b:"Toplum"}, {f:"Herausforderung", b:"Meydan okuma"}, {f:"Leistung", b:"Performans"}, {f:"Nachhaltig", b:"Sürdürülebilir"}, {f:"Struktur", b:"Yapı"},
+                {f:"Umwelt", b:"Çevre"}, {f:"Verantwortung", b:"Sorumluluk"}, {f:"Vorteil", b:"Avantaj"}, {f:"Wettbewerb", b:"Rekabet"}, {f:"Zusammenhang", b:"Bağlam"}
             ]
         },
         "İspanyolca": {
             "A1": [
-                {f:"Casa", b:"Ev"}, {f:"Perro", b:"Köpek"}, {f:"Gato", b:"Kedi"},
-                {f:"Comida", b:"Yemek"}, {f:"Gracias", b:"Teşekkürler"}, {f:"Buenos días", b:"Günaydın"}
+                {f:"Hola", b:"Merhaba"}, {f:"Amigo", b:"Arkadaş"}, {f:"Casa", b:"Ev"}, {f:"Sol", b:"Güneş"}, {f:"Agua", b:"Su"},
+                {f:"Niño", b:"Çocuk"}, {f:"Libro", b:"Kitap"}, {f:"Madre", b:"Anne"}, {f:"Padre", b:"Baba"}, {f:"Gato", b:"Kedi"},
+                {f:"Flor", b:"Çiçek"}, {f:"Mar", b:"Deniz"}, {f:"Pan", b:"Ekmek"}, {f:"Luna", b:"Ay"}, {f:"Coche", b:"Araba"}
+            ],
+            "A2": [
+                {f:"Viaje", b:"Yolculuk"}, {f:"Comida", b:"Yemek"}, {f:"Trabajo", b:"İş"}, {f:"Ciudad", b:"Şehir"}, {f:"Pueblo", b:"Köy"},
+                {f:"Reloj", b:"Saat"}, {f:"Calle", b:"Sokak"}, {f:"Puerta", b:"Kapı"}, {f:"Mesa", b:"Masa"}, {f:"Silla", b:"Sandalye"},
+                {f:"Campo", b:"Tarla"}, {f:"Cielo", b:"Gökyüzü"}, {f:"Viento", b:"Rüzgar"}, {f:"Tierra", b:"Toprak"}, {f:"Fuego", b:"Ateş"}
+            ],
+            "B1": [
+                {f:"Aventura", b:"Macera"}, {f:"Destino", b:"Kader/Varış noktası"}, {f:"Esfuerzo", b:"Çaba"}, {f:"Memoria", b:"Hafıza"}, {f:"Pasión", b:"Tutku"},
+                {f:"Recuerdo", b:"Anı"}, {f:"Salud", b:"Sağlık"}, {f:"Suerte", b:"Şans"}, {f:"Tesoro", b:"Hazine"}, {f:"Universo", b:"Evren"},
+                {f:"Verdad", b:"Gerçek"}, {f:"Paz", b:"Barış"}, {f:"Libertad", b:"Özgürlük"}, {f:"Sueño", b:"Rüya"}, {f:"Poder", b:"Güç"}
+            ],
+            "B2": [
+                {f:"Desarrollo", b:"Gelişim"}, {f:"Economía", b:"Ekonomi"}, {f:"Entorno", b:"Çevre"}, {f:"Igualdad", b:"Eşitlik"}, {f:"Justicia", b:"Adalet"},
+                {f:"Obstáculo", b:"Engel"}, {f:"Propósito", b:"Maksat"}, {f:"Recurso", b:"Kaynak"}, {f:"Sociedad", b:"Toplum"}, {f:"Tecnología", b:"Teknoloji"},
+                {f:"Valor", b:"Değer"}, {f:"Amenaza", b:"Tehdit"}, {f:"Crecimiento", b:"Büyüme"}, {f:"Desafío", b:"Zorluk"}, {f:"Ventaja", b:"Avantaj"}
             ]
         },
-        "Rusça": { "A1": [{f:"Дом (Dom)", b:"Ev"}, {f:"Друг (Drug)", b:"Arkadaş"}] },
-        "Fransızca": { "A1": [{f:"Maison", b:"Ev"}, {f:"Ami", b:"Arkadaş"}] },
-        "Arapça": { "A1": [{f:"بيت (Bayt)", b:"Ev"}, {f:"صديق (Sadiq)", b:"Arkadaş"}] }
+        "Rusça": {
+            "A1": [
+                {f:"Привет (Privet)", b:"Merhaba"}, {f:"Дом (Dom)", b:"Ev"}, {f:"Друг (Drug)", b:"Arkadaş"}, {f:"Мама (Mama)", b:"Anne"}, {f:"Папа (Papa)", b:"Baba"},
+                {f:"Книга (Kniga)", b:"Kitap"}, {f:"Вода (Voda)", b:"Su"}, {f:"Хлеб (Hleb)", b:"Ekmek"}, {f:"Стол (Stol)", b:"Masa"}, {f:"Школа (Shkola)", b:"Okul"},
+                {f:"Город (Gorod)", b:"Şehir"}, {f:"Утро (Utro)", b:"Sabah"}, {f:"День (Den)", b:"Gün"}, {f:"Ночь (Noch)", b:"Gece"}, {f:"Имя (Imya)", b:"İsim"}
+            ],
+            "A2": [
+                {f:"Работа (Rabota)", b:"İş"}, {f:"Время (Vremya)", b:"Zaman"}, {f:"Машина (Mashina)", b:"Araba"}, {f:"Погода (Pogoda)", b:"Hava Durumu"}, {f:"Магазин (Magazin)", b:"Mağaza"},
+                {f:"Семья (Semya)", b:"Aile"}, {f:"Слово (Slovo)", b:"Kelime"}, {f:"Деньги (Dengi)", b:"Para"}, {f:"Море (More)", b:"Deniz"}, {f:"Здоровье (Zdorovye)", b:"Sağlık"},
+                {f:"Озеро (Ozero)", b:"Göl"}, {f:"Лес (Les)", b:"Orman"}, {f:"Птица (Ptitsa)", b:"Kuş"}, {f:"Солнце (Solntse)", b:"Güneş"}, {f:"Цветок (Tsvetok)", b:"Çiçek"}
+            ],
+            "B1": [
+                {f:"Решение (Resheniye)", b:"Karar"}, {f:"Причина (Prichina)", b:"Sebep"}, {f:"Свобода (Svoboda)", b:"Özgürlük"}, {f:"Успех (Uspekh)", b:"Başarı"}, {f:"Опыт (Opyt)", b:"Deneyim"},
+                {f:"Надежда (Nadezhda)", b:"Umut"}, {f:"Будущее (Budushcheye)", b:"Gelecek"}, {f:"История (Istoriya)", b:"Tarih/Hikaye"}, {f:"Знание (Znaniye)", b:"Bilgi"}, {f:"Правда (Pravda)", b:"Doğru"},
+                {f:"Мысль (Mysl)", b:"Düşünce"}, {f:"Чувство (Chuvstvo)", b:"Duygu"}, {f:"Путешествие (Puteshestviye)", b:"Seyahat"}, {f:"Природа (Priroda)", b:"Doğa"}, {f:"Цель (Tsel)", b:"Hedef"}
+            ],
+            "B2": [
+                {f:"Общество (Obshchestvo)", b:"Toplum"}, {f:"Развитие (Razvitiye)", b:"Gelişim"}, {f:"Возможность (Vozmozhnost)", b:"Olanak"}, {f:"Влияние (Vliyaniye)", b:"Etki"}, {f:"Ответственность (Otvetstvennost)", b:"Sorumluluk"},
+                {f:"Исследование (Issledovaniye)", b:"Araştırma"}, {f:"Экономика (Ekonomika)", b:"Ekonomi"}, {f:"Правительство (Pravitelstvo)", b:"Hükümet"}, {f:"Культура (Kultura)", b:"Kültür"}, {f:"Образование (Obrazovaniye)", b:"Eğitim"},
+                {f:"Традиция (Traditsiya)", b:"Gelenek"}, {f:"Технология (Tekhnologiya)", b:"Teknoloji"}, {f:"Ресурс (Resurs)", b:"Kaynak"}, {f:"Преимущество (Preimushchestvo)", b:"Avantaj"}, {f:"Сотрудничество (Sotrudnichestvo)", b:"İşbirliği"}
+            ]
+        },
+        "Fransızca": {
+            "A1": [
+                {f:"Bonjour", b:"Merhaba"}, {f:"Maison", b:"Ev"}, {f:"Ami", b:"Arkadaş"}, {f:"Livre", b:"Kitap"}, {f:"Eau", b:"Su"},
+                {f:"Pain", b:"Ekmek"}, {f:"École", b:"Okul"}, {f:"Famille", b:"Aile"}, {f:"Temps", b:"Zaman"}, {f:"Ville", b:"Şehir"},
+                {f:"Mère", b:"Anne"}, {f:"Père", b:"Baba"}, {f:"Chien", b:"Köpek"}, {f:"Chat", b:"Kedi"}, {f:"Fleur", b:"Çiçek"}
+            ],
+            "A2": [
+                {f:"Travail", b:"İş"}, {f:"Argent", b:"Para"}, {f:"Cuisine", b:"Mutfak"}, {f:"Voyage", b:"Yolculuk"}, {f:"Santé", b:"Sağlık"},
+                {f:"Nature", b:"Doğa"}, {f:"Soleil", b:"Güneş"}, {f:"Lune", b:"Ay"}, {f:"Vent", b:"Rüzgar"}, {f:"Terre", b:"Dünya/Yer"},
+                {f:"Jardin", b:"Bahçe"}, {f:"Forêt", b:"Orman"}, {f:"Oiseau", b:"Kuş"}, {f:"Espace", b:"Alan/Uzay"}, {f:"Rêve", b:"Rüya"}
+            ],
+            "B1": [
+                {f:"Décision", b:"Karar"}, {f:"Espoir", b:"Umut"}, {f:"Expérience", b:"Deneyim"}, {f:"Liberté", b:"Özgürlük"}, {f:"Opinion", b:"Fikir"},
+                {f:"Solution", b:"Çözüm"}, {f:"Succès", b:"Başarı"}, {f:"Connaissance", b:"Bilgi"}, {f:"Croyance", b:"İnanç"}, {f:"Objectif", b:"Hedef"},
+                {f:"Soutien", b:"Destek"}, {f:"Vérité", b:"Gerçek"}, {f:"Avenir", b:"Gelecek"}, {f:"Changement", b:"Değişim"}, {f:"Paix", b:"Barış"}
+            ],
+            "B2": [
+                {f:"Conséquence", b:"Sonuç"}, {f:"Développement", b:"Gelişim"}, {f:"Environnement", b:"Çevre"}, {f:"Société", b:"Toplum"}, {f:"Égalité", b:"Eşitlik"},
+                {f:"Justice", b:"Adalet"}, {f:"Ressource", b:"Kaynak"}, {f:"Technologie", b:"Teknoloji"}, {f:"Économie", b:"Ekonomi"}, {f:"Influence", b:"Etki"},
+                {f:"Responsabilité", b:"Sorumluluk"}, {f:"Avantage", b:"Avantaj"}, {f:"Défi", b:"Zorluk"}, {f:"Innovation", b:"Yenilik"}, {f:"Négociation", b:"Müzakere"}
+            ]
+        },
+        "Arapça": {
+            "A1": [
+                {f:"مرحبا (Merhaba)", b:"Merhaba"}, {f:"بيت (Bayt)", b:"Ev"}, {f:"صديق (Sadiq)", b:"Arkadaş"}, {f:"كتاب (Kitab)", b:"Kitap"}, {f:"ماء (Ma')", b:"Su"},
+                {f:"خبز (Khubz)", b:"Ekmek"}, {f:"مدرسة (Madrasa)", b:"Okul"}, {f:"عائلة (A'ila)", b:"Aile"}, {f:"وقت (Waqt)", b:"Zaman"}, {f:"مدينة (Madina)", b:"Şehir"},
+                {f:"أم (Umm)", b:"Anne"}, {f:"أب (Ab)", b:"Baba"}, {f:"كلب (Kalb)", b:"Köpek"}, {f:"قطة (Qitta)", b:"Kedi"}, {f:"زهرة (Zahra)", b:"Çiçek"}
+            ],
+            "A2": [
+                {f:"عمل (Amal)", b:"İş"}, {f:"نقود (Nuqud)", b:"Para"}, {f:"مطبخ (Matbakh)", b:"Mutfak"}, {f:"سفر (Safar)", b:"Yolculuk"}, {f:"صحة (Sihha)", b:"Sağlık"},
+                {f:"طبيعة (Tabi'a)", b:"Doğa"}, {f:"شمس (Shams)", b:"Güneş"}, {f:"قمر (Qamar)", b:"Ay"}, {f:"ريح (Rih)", b:"Rüzgar"}, {f:"أرض (Ard)", b:"Yer/Dünya"},
+                {f:"حديقة (Hadiqa)", b:"Bahçe"}, {f:"غابة (Ghaba)", b:"Orman"}, {f:"طائر (Ta'ir)", b:"Kuş"}, {f:"حلم (Hulm)", b:"Rüya"}, {f:"بحر (Bahr)", b:"Deniz"}
+            ],
+            "B1": [
+                {f:"قرار (Qarar)", b:"Karar"}, {f:"أمل (Amal)", b:"Umut"}, {f:"تجربة (Tajriba)", b:"Deneyim"}, {f:"حرية (Hurriya)", b:"Özgürlük"}, {f:"رأي (Ra'y)", b:"Fikir"},
+                {f:"حل (Hall)", b:"Çözüm"}, {f:"نجاح (Najah)", b:"Başarı"}, {f:"معرفة (Ma'rifa)", b:"Bilgi"}, {f:"إيمان (Iman)", b:"İnanç"}, {f:"هدف (Hadaf)", b:"Hedef"},
+                {f:"دعم (Da'm)", b:"Destek"}, {f:"حقيقة (Haqiqa)", b:"Gerçek"}, {f:"مستقبل (Mustaqbal)", b:"Gelecek"}, {f:"تغيير (Taghyir)", b:"Değişim"}, {f:"سلام (Salam)", b:"Barış"}
+            ],
+            "B2": [
+                {f:"نتيجة (Natija)", b:"Sonuç"}, {f:"تطوير (Tatwir)", b:"Gelişim"}, {f:"بيئة (Bi'a)", b:"Çevre"}, {f:"مجتمع (Mujtama')", b:"Toplum"}, {f:"مساواة (Musawa)", b:"Eşitlik"},
+                {f:"عدالة (Adala)", b:"Adalet"}, {f:"مصدر (Masdar)", b:"Kaynak"}, {f:"تكنولوجيا (Tiknulujiya)", b:"Teknoloji"}, {f:"اقتصاد (Iqtisad)", b:"Ekonomi"}, {f:"تأثير (Ta'thir)", b:"Etki"},
+                {f:"مسؤولية (Mas'uliya)", b:"Sorumluluk"}, {f:"ميزة (Miza)", b:"Avantaj"}, {f:"تحدي (Tahadi)", b:"Zorluk"}, {f:"ابتكار (Ibtikar)", b:"Yenilik"}, {f:"تفاوض (Tafawud)", b:"Müzakere"}
+            ]
+        }
     };
-
-    function goToLanguages() { if(document.getElementById('username').value != "") show('langScreen'); }
-    function selectLang(l) { selectedLang = l; show('levelScreen'); }
-    function startLearning(lvl) {
-        words = data[selectedLang][lvl] || [{f:"Yakında", b:"Eklenecek"}];
-        currentIndex = 0; learnedCount = 0; updateCard(); show('studyScreen');
-    }
-    function flip() { document.getElementById('cardInner').classList.toggle('flipped'); }
-    function nextWord() {
-        learnedCount++; currentIndex++;
-        if(currentIndex >= words.length) { alert("Harika! Hepsini bitirdin."); show('levelScreen'); }
-        else { document.getElementById('cardInner').classList.remove('flipped'); setTimeout(updateCard, 200); }
-    }
-    function updateCard() {
-        document.getElementById('wordFront').innerText = words[currentIndex].f;
-        document.getElementById('wordBack').innerText = words[currentIndex].b;
-        document.getElementById('pBar').style.width = (learnedCount / words.length * 100) + "%";
-        document.getElementById('progressText').innerText = learnedCount + " / " + words.length;
-    }
-    function show(id) {
-        ["loginScreen", "langScreen", "levelScreen", "studyScreen"].forEach(s => document.getElementById(s).classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
-    }
-</script>
-</body>
-</html>
