@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miran Dil Akademisi Pro 🌍</title>
+    <style>
+        :root { --ana: #002e5d; --ikinci: #fedd00; --beyaz: #ffffff; --gri: #f4f4f4; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gri); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 90%; max-width: 500px; margin-top: 20px; text-align: center; }
+        .hidden { display: none; }
+        .login-box { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        input { width: 85%; padding: 12px; margin: 15px 0; border: 2px solid var(--ana); border-radius: 10px; font-size: 16px; }
+        .btn { padding: 15px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 16px; width: 100%; margin: 5px 0; }
+        .btn-main { background: var(--ana); color: var(--ikinci); }
+        .btn-learned { background: #27ae60; color: white; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .progress-container { width: 100%; background: #ddd; height: 12px; border-radius: 10px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: #27ae60; width: 0%; transition: 0.4s; }
+        .flashcard { perspective: 1000px; width: 100%; height: 200px; cursor: pointer; margin-top: 15px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border-radius: 20px; border: 3px solid var(--ana); background: white; box-shadow: 0 8px 15px rgba(0,0,0,0.1); padding: 10px; box-sizing: border-box; }
+        .card-back { background: var(--ikinci); color: var(--ana); transform: rotateY(180deg); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loginScreen" class="login-box">
+        <h2 style="color: var(--ana);">Miran Dil Akademisi</h2>
+        <input type="text" id="username" placeholder="Adını yaz...">
+        <button class="btn btn-main" onclick="goToLanguages()">Başla</button>
+    </div>
+
+    <div id="langScreen" class="hidden">
+        <h3>Dil Seçin</h3>
+        <div class="grid">
+            <button class="btn btn-main" onclick="selectLang('İngilizce')">🇬🇧 İngilizce</button>
+            <button class="btn btn-main" onclick="selectLang('Almanca')">🇩🇪 Almanca</button>
+            <button class="btn btn-main" onclick="selectLang('İspanyolca')">🇪🇸 İspanyolca</button>
+            <button class="btn btn-main" onclick="selectLang('Fransızca')">🇫🇷 Fransızca</button>
+            <button class="btn btn-main" onclick="selectLang('Rusça')">🇷🇺 Rusça</button>
+            <button class="btn btn-main" onclick="selectLang('Arapça')">🇸🇦 Arapça</button>
+        </div>
+    </div>
+
+    <div id="levelScreen" class="hidden">
+        <h3 id="levelHeader">Seviye</h3>
+        <div class="grid">
+            <button class="btn btn-main" onclick="startLearning('A1')">A1</button>
+            <button class="btn btn-main" onclick="startLearning('A2')">A2</button>
+            <button class="btn btn-main" onclick="startLearning('B1')">B1</button>
+            <button class="btn btn-main" onclick="startLearning('B2')">B2</button>
+        </div>
+        <button class="btn" onclick="show('langScreen')" style="background:#888; color:white;">Geri</button>
+    </div>
+
+    <div id="studyScreen" class="hidden">
+        <div class="progress-container"><div id="pBar" class="progress-bar"></div></div>
+        <p id="progressText">0 / 0</p>
+        <div class="flashcard" onclick="flip()"><div id="cardInner" class="card-inner"><div id="wordFront" class="card-front">..</div><div id="wordBack" class="card-back">..</div></div></div>
+        <button class="btn btn-learned" onclick="nextWord()">Öğrendim ✅</button>
+        <button class="btn" onclick="show('levelScreen')" style="background:#888; color:white;">Çıkış</button>
+    </div>
+</div>
+
+<script>
+    let selectedLang = "", words = [], currentIndex = 0, learnedCount = 0;
+
+    const data = {
+        "İngilizce": {
+            "A1": [
+                {f:"Always", b:"Her zaman"}, {f:"Never", b:"Asla"}, {f:"Often", b:"Sık sık"},
+                {f:"Water", b:"Su"}, {f:"Food", b:"Yemek"}, {f:"Friend", b:"Arkadaş"},
+                {f:"School", b:"Okul"}, {f:"Family", b:"Aile"}, {f:"Time", b:"Zaman"},
+                {f:"Work", b:"Çalışmak"}, {f:"Small", b:"Küçük"}, {f:"Large", b:"Büyük"},
+                {f:"Happy", b:"Mutlu"}, {f:"Sad", b:"Üzgün"}, {f:"Morning", b:"Sabah"}
+            ],
+            "A2": [{f:"Experience", b:"Deneyim"}, {f:"Improve", b:"Geliştirmek"}]
+        },
+        "Almanca": {
+            "A1": [
+                {f:"Haus", b:"Ev"}, {f:"Brot", b:"Ekmek"}, {f:"Wasser", b:"Su"},
+                {f:"Kind", b:"Çocuk"}, {f:"Frau", b:"Kadın"}, {f:"Mann", b:"Adam"},
+                {f:"Danke", b:"Teşekkürler"}, {f:"Bitte", b:"Lütfen"}, {f:"Guten Tag", b:"İyi günler"}
+            ]
+        },
+        "İspanyolca": {
+            "A1": [
+                {f:"Casa", b:"Ev"}, {f:"Perro", b:"Köpek"}, {f:"Gato", b:"Kedi"},
+                {f:"Comida", b:"Yemek"}, {f:"Gracias", b:"Teşekkürler"}, {f:"Buenos días", b:"Günaydın"}
+            ]
+        },
+        "Rusça": { "A1": [{f:"Дом (Dom)", b:"Ev"}, {f:"Друг (Drug)", b:"Arkadaş"}] },
+        "Fransızca": { "A1": [{f:"Maison", b:"Ev"}, {f:"Ami", b:"Arkadaş"}] },
+        "Arapça": { "A1": [{f:"بيت (Bayt)", b:"Ev"}, {f:"صديق (Sadiq)", b:"Arkadaş"}] }
+    };
+
+    function goToLanguages() { if(document.getElementById('username').value != "") show('langScreen'); }
+    function selectLang(l) { selectedLang = l; show('levelScreen'); }
+    function startLearning(lvl) {
+        words = data[selectedLang][lvl] || [{f:"Yakında", b:"Eklenecek"}];
+        currentIndex = 0; learnedCount = 0; updateCard(); show('studyScreen');
+    }
+    function flip() { document.getElementById('cardInner').classList.toggle('flipped'); }
+    function nextWord() {
+        learnedCount++; currentIndex++;
+        if(currentIndex >= words.length) { alert("Harika! Hepsini bitirdin."); show('levelScreen'); }
+        else { document.getElementById('cardInner').classList.remove('flipped'); setTimeout(updateCard, 200); }
+    }
+    function updateCard() {
+        document.getElementById('wordFront').innerText = words[currentIndex].f;
+        document.getElementById('wordBack').innerText = words[currentIndex].b;
+        document.getElementById('pBar').style.width = (learnedCount / words.length * 100) + "%";
+        document.getElementById('progressText').innerText = learnedCount + " / " + words.length;
+    }
+    function show(id) {
+        ["loginScreen", "langScreen", "levelScreen", "studyScreen"].forEach(s => document.getElementById(s).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
